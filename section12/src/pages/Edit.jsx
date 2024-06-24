@@ -4,25 +4,14 @@ import Header from "../components/Header";
 import Button from "../components/Button";
 import Editor from "../components/Editor";
 import { DiaryDispatchContext, DiaryStateContext } from "../App";
+import useDiary from "../hooks/useDiary";
 
 const Edit = () => {
-  const data = useContext(DiaryStateContext);
   const { onDelete, onUpdate } = useContext(DiaryDispatchContext);
   const params = useParams();
   const nav = useNavigate();
-  const [curDiaryItem, setCurDiaryItem] = useState();
 
-  useEffect(() => {
-    const currentDiaryItem = data.find(
-      (item) => String(item.id) === String(params.id)
-    );
-    if (!currentDiaryItem) {
-      window.alert("잘못 들어오셨습니다만");
-      nav("/", { replace: true });
-    }
-
-    setCurDiaryItem(currentDiaryItem);
-  }, [params.id, data]);
+  const curDiaryItem = useDiary(params.id);
 
   const onClickDelete = () => {
     if (window.confirm("일기를 정말 삭제할까요? 다시 복구되지 않아요!")) {
@@ -34,7 +23,7 @@ const Edit = () => {
   const onSubmit = (input) => {
     if (window.confirm("일기를 정말 수정할까요?")) {
       onUpdate(
-        params.id,
+        Number(params.id),
         input.createdDate.getTime(),
         input.emotionId,
         input.content
